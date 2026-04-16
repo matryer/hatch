@@ -12,7 +12,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/matryer/hatch/pkg/source"
+	"github.com/grafana/hatch/pkg/source"
 )
 
 // maxSlugLength bounds the filesystem name derived from a title so the

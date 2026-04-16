@@ -10,7 +10,7 @@ each read to customise their behaviour.
 ## Install
 
 ```
-go install github.com/matryer/hatch/cmd/hatch@latest
+go install github.com/grafana/hatch/cmd/hatch@latest
 ```
 
 Or with mise inside the repo:

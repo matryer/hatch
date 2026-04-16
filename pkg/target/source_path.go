@@ -1,7 +1,7 @@
 package target
 
 import (
-	"github.com/matryer/hatch/pkg/source"
+	"github.com/grafana/hatch/pkg/source"
 )
 
 // SourceFilePathFor is SourceFilePath with a nil-path fallback for

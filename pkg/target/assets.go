@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/matryer/hatch/pkg/source"
+	"github.com/grafana/hatch/pkg/source"
 )
 
 // CopySkillAssets returns artifacts for every sibling file of a skill's

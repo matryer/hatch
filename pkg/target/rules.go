@@ -3,8 +3,8 @@ package target
 import (
 	"strings"
 
-	"github.com/matryer/hatch/pkg/render"
-	"github.com/matryer/hatch/pkg/source"
+	"github.com/grafana/hatch/pkg/render"
+	"github.com/grafana/hatch/pkg/source"
 )
 
 // RulesBlock returns the concatenated markdown body for every rule that

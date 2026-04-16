@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/matryer/hatch/pkg/target"
+	"github.com/grafana/hatch/pkg/target"
 )
 
 func cmdList(_ context.Context, version string, available *target.Set, args []string, stdout, stderr io.Writer) error {

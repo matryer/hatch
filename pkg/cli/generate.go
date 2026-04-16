@@ -9,8 +9,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/matryer/hatch/pkg/block"
-	"github.com/matryer/hatch/pkg/target"
+	"github.com/grafana/hatch/pkg/block"
+	"github.com/grafana/hatch/pkg/target"
 )
 
 // cmdGen is the implementation of `hatch gen`. It always operates on the

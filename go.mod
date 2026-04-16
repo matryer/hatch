@@ -1,4 +1,4 @@
-module github.com/matryer/hatch
+module github.com/grafana/hatch
 
 go 1.26.2
 

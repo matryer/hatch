@@ -5,7 +5,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/matryer/hatch/pkg/source"
+	"github.com/grafana/hatch/pkg/source"
 )
 
 // validatePathFlag validates the -path argument shared by `hatch init` and

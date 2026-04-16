@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/matryer/hatch/pkg/source"
+	"github.com/grafana/hatch/pkg/source"
 )
 
 // cmdInit scaffolds `.hatch/` with the four primitive container

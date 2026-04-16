@@ -21,13 +21,13 @@ import (
 	"os/signal"
 	"runtime/debug"
 
-	"github.com/matryer/hatch/pkg/cli"
-	"github.com/matryer/hatch/pkg/target"
-	"github.com/matryer/hatch/pkg/target/claude"
-	"github.com/matryer/hatch/pkg/target/codex"
-	"github.com/matryer/hatch/pkg/target/copilot"
-	"github.com/matryer/hatch/pkg/target/cursor"
-	"github.com/matryer/hatch/pkg/target/opencode"
+	"github.com/grafana/hatch/pkg/cli"
+	"github.com/grafana/hatch/pkg/target"
+	"github.com/grafana/hatch/pkg/target/claude"
+	"github.com/grafana/hatch/pkg/target/codex"
+	"github.com/grafana/hatch/pkg/target/copilot"
+	"github.com/grafana/hatch/pkg/target/cursor"
+	"github.com/grafana/hatch/pkg/target/opencode"
 )
 
 func main() {
@@ -53,7 +53,7 @@ func run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.
 }
 
 // version returns the hatch CLI version string, derived from Go build
-// info. When installed via `go install github.com/matryer/hatch/cmd/hatch@vX.Y.Z`
+// info. When installed via `go install github.com/grafana/hatch/cmd/hatch@vX.Y.Z`
 // this is the tag (`v0.1.0`); when installed `@latest` off an untagged
 // commit it's the pseudo-version (`v0.0.0-<date>-<sha>`). Local builds
 // (`go build`, `go test`, `go run`) report `(devel)` in build info — for

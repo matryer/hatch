@@ -8,13 +8,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/matryer/hatch/pkg/cli"
-	"github.com/matryer/hatch/pkg/target"
-	"github.com/matryer/hatch/pkg/target/claude"
-	"github.com/matryer/hatch/pkg/target/codex"
-	"github.com/matryer/hatch/pkg/target/copilot"
-	"github.com/matryer/hatch/pkg/target/cursor"
-	"github.com/matryer/hatch/pkg/target/opencode"
+	"github.com/grafana/hatch/pkg/cli"
+	"github.com/grafana/hatch/pkg/target"
+	"github.com/grafana/hatch/pkg/target/claude"
+	"github.com/grafana/hatch/pkg/target/codex"
+	"github.com/grafana/hatch/pkg/target/copilot"
+	"github.com/grafana/hatch/pkg/target/cursor"
+	"github.com/grafana/hatch/pkg/target/opencode"
 	"github.com/matryer/is"
 )
 

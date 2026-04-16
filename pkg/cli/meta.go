@@ -1,6 +1,6 @@
 package cli
 
-import "github.com/matryer/hatch/pkg/source"
+import "github.com/grafana/hatch/pkg/source"
 
 // loadSource is the gen/list/clean shared entry point. It loads .hatch/
 // from the current working directory and, unless includeMeta is false,
@@ -63,7 +63,7 @@ const (
 
 const metaSkillBody = `# hatch
 
-This project uses **hatch** (` + "`github.com/matryer/hatch`" + `) to keep a single
+This project uses **hatch** (` + "`github.com/grafana/hatch`" + `) to keep a single
 source of truth for the guidance it sends to coding agents. Hatch reads a
 directory under ` + "`.hatch/`" + ` and produces the native files each agent expects
 (Claude Code, OpenAI Codex, GitHub Copilot, Cursor, OpenCode).
@@ -77,7 +77,7 @@ root to regenerate everything.
 ## Install
 
 ` + "```" + `
-go install github.com/matryer/hatch/cmd/hatch@latest
+go install github.com/grafana/hatch/cmd/hatch@latest
 ` + "```" + `
 
 ## The four primitives

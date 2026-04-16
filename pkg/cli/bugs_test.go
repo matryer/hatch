@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/matryer/hatch/pkg/cli"
+	"github.com/grafana/hatch/pkg/cli"
 	"github.com/matryer/is"
 )
 

@@ -7,8 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/matryer/hatch/pkg/block"
-	"github.com/matryer/hatch/pkg/target"
+	"github.com/grafana/hatch/pkg/block"
+	"github.com/grafana/hatch/pkg/target"
 )
 
 // cmdClean re-derives what a fresh `hatch gen` would write from the current

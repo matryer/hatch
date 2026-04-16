@@ -10,7 +10,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/matryer/hatch/pkg/target"
+	"github.com/grafana/hatch/pkg/target"
 )
 
 // Run is the testable CLI entry point. It dispatches on args[1] and delegates

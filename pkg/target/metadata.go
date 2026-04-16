@@ -1,7 +1,7 @@
 package target
 
 import (
-	"github.com/matryer/hatch/pkg/render"
+	"github.com/grafana/hatch/pkg/render"
 	"gopkg.in/yaml.v3"
 )
 

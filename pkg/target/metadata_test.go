@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/matryer/hatch/pkg/render"
-	"github.com/matryer/hatch/pkg/target"
+	"github.com/grafana/hatch/pkg/render"
+	"github.com/grafana/hatch/pkg/target"
 	"github.com/matryer/is"
 )
 
