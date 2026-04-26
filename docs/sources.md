@@ -156,7 +156,7 @@ is used on non-SKILL.md outputs (commands, agents, `.mdc` rules,
 Copilot instructions files) for consistency.
 
 Block-injected files (`CLAUDE.md`, `AGENTS.md`,
-`.github/copilot-instructions.md`) have no frontmatter of their own
-and don't carry this metadata. The hatch-injected meta skill omits
+`.github/copilot-instructions.md`, `.rules`) have no frontmatter of
+their own and don't carry this metadata. The hatch-injected meta skill omits
 `source` because no `.hatch/_skills/hatch/SKILL.md` exists until you
 create one.

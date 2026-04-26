@@ -1,6 +1,6 @@
 // Command hatch generates rules, skills, commands, and agent definitions for
-// multiple coding agents (Claude Code, Codex, Copilot, Cursor, OpenCode) from
-// a single neutral source tree under `.hatch/`.
+// multiple coding agents (Claude Code, Codex, Copilot, Cursor, OpenCode, Zed)
+// from a single neutral source tree under `.hatch/`.
 //
 // Usage:
 //
@@ -28,6 +28,7 @@ import (
 	"github.com/grafana/hatch/pkg/target/copilot"
 	"github.com/grafana/hatch/pkg/target/cursor"
 	"github.com/grafana/hatch/pkg/target/opencode"
+	"github.com/grafana/hatch/pkg/target/zed"
 )
 
 func main() {
@@ -48,6 +49,7 @@ func run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.
 		copilot.New(),
 		cursor.New(),
 		opencode.New(),
+		zed.New(),
 	)
 	return cli.Run(ctx, version(), targets, args, stdin, stdout, stderr)
 }

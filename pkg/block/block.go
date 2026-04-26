@@ -1,6 +1,6 @@
 // Package block implements the hatch-managed block-injection protocol used
 // for files that may contain user-authored content around a hatch-generated
-// section (CLAUDE.md, AGENTS.md, .github/copilot-instructions.md).
+// section (CLAUDE.md, AGENTS.md, .github/copilot-instructions.md, .rules).
 //
 // A hatch-managed block is delimited by HTML comments that must appear on
 // lines of their own:

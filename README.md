@@ -4,8 +4,8 @@ Write rules, skills, commands, and sub-agent definitions **once**, generate
 the native files each coding agent expects.
 
 Hatch reads a single source tree under `.hatch/` and produces the specific
-files Claude Code, OpenAI Codex CLI, GitHub Copilot, Cursor, and OpenCode
-each read to customise their behaviour.
+files Claude Code, OpenAI Codex CLI, GitHub Copilot, Cursor, OpenCode, and
+Zed each read to customise their behaviour.
 
 ## Install
 
@@ -35,20 +35,24 @@ Edit files under `.hatch/_rules/`, `.hatch/_skills/`, `.hatch/_commands/`,
 or `.hatch/_agents/`, then re-run `hatch gen`. Commit the `.hatch/` source
 *and* the generated files together.
 
+## Migrating
+
+To migrate to hatch, ask your coding agent to read our [docs](docs/).
+
 ## Feature support
 
 ✓ means the agent has a native primitive; ⚠ means hatch emulates it.
 See [docs/features.md](docs/features.md) for how each emulation works,
 its output paths, and trade-offs.
 
-| Feature                   | Claude Code | Codex | Copilot | Cursor | OpenCode |
-| ------------------------- | :---------: | :---: | :-----: | :----: | :------: |
-| Rules (always-on)         |      ✓      |   ✓   |    ✓    |   ✓    |    ✓     |
-| Rules (scoped `applyTo`)  |      ⚠      |   ⚠   |    ✓    |   ✓    |    ⚠     |
-| Skills                    |      ✓      |   ✓   |    ⚠    |   ⚠    |    ✓     |
-| Slash commands            |      ✓      |   ⚠   |    ✓    |   ⚠    |    ✓     |
-| Sub-agents                |      ✓      |   ⚠   |    ✓    |   ⚠    |    ✓     |
-| Nested scopes (monorepo)  |      ✓      |   ✓   |    ⚠    |   ⚠    |    ✓     |
+| Feature                   | Claude Code | Codex | Copilot | Cursor | OpenCode | Zed |
+| ------------------------- | :---------: | :---: | :-----: | :----: | :------: | :-: |
+| Rules (always-on)         |      ✓      |   ✓   |    ✓    |   ✓    |    ✓     |  ✓  |
+| Rules (scoped `applyTo`)  |      ⚠      |   ⚠   |    ✓    |   ✓    |    ⚠     |  ⚠  |
+| Skills                    |      ✓      |   ✓   |    ⚠    |   ⚠    |    ✓     |  ⚠  |
+| Slash commands            |      ✓      |   ⚠   |    ✓    |   ⚠    |    ✓     |  ⚠  |
+| Sub-agents                |      ✓      |   ⚠   |    ✓    |   ⚠    |    ✓     |  ⚠  |
+| Nested scopes (monorepo)  |      ✓      |   ✓   |    ⚠    |   ⚠    |    ✓     |  ⚠  |
 
 ## CLI
 
