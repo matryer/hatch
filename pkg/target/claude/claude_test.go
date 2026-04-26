@@ -8,7 +8,34 @@ import (
 	"github.com/grafana/hatch/pkg/target"
 	"github.com/grafana/hatch/pkg/target/claude"
 	"github.com/matryer/is"
+	"gopkg.in/yaml.v3"
 )
+
+// mapNode builds a single-level yaml mapping for test fixtures.
+func mapNode(pairs ...string) *yaml.Node {
+	n := &yaml.Node{Kind: yaml.MappingNode}
+	for i := 0; i < len(pairs); i += 2 {
+		n.Content = append(n.Content,
+			&yaml.Node{Kind: yaml.ScalarNode, Value: pairs[i]},
+			&yaml.Node{Kind: yaml.ScalarNode, Value: pairs[i+1]},
+		)
+	}
+	return n
+}
+
+// nestedMap wraps `pairs` in a mapping under the outer key. Used to
+// simulate a source primitive's per-target passthrough:
+// `claude: { metadata: { author: me } }` stores a mapping of
+// {metadata: {author: me}} in Overrides["claude"].
+func nestedMap(outer string, inner *yaml.Node) *yaml.Node {
+	return &yaml.Node{
+		Kind: yaml.MappingNode,
+		Content: []*yaml.Node{
+			{Kind: yaml.ScalarNode, Value: outer},
+			inner,
+		},
+	}
+}
 
 func TestGenerate_RulesAsBlockInCLAUDE(t *testing.T) {
 	is := is.New(t)
@@ -100,6 +127,71 @@ func TestGenerate_AddsMetadataBlock(t *testing.T) {
 
 	scoped := byPath["backend/.claude/commands/deploy.md"]
 	is.True(strings.Contains(scoped, "source: .hatch/backend/_commands/deploy.md"))
+}
+
+func TestGenerate_MergesHatchMetadataIntoSourceMetadata(t *testing.T) {
+	// Regression for the v0.4.0 bug: when a source skill carries a
+	// per-target `claude: { metadata: { author: me } }` passthrough,
+	// hatch's MetadataField must merge INTO that existing metadata
+	// mapping, not emit a second top-level `metadata:` key (invalid
+	// YAML).
+	is := is.New(t)
+	claudeOverride := nestedMap("metadata", mapNode("author", "me", "version", "1.0"))
+	s := &source.Source{
+		HatchVersion: "v0.9.9-test",
+		Scopes: []source.Scope{{
+			Skills: []source.Primitive{{
+				Kind:        source.KindSkill,
+				Name:        "review-pr",
+				Description: "d",
+				Body:        "b",
+				SourcePath:  "x",
+				Overrides:   map[string]*yaml.Node{"claude": claudeOverride},
+			}},
+		}},
+	}
+	arts, err := claude.New().Generate(s)
+	is.NoErr(err)
+	for _, a := range arts {
+		if a.Path != ".claude/skills/review-pr/SKILL.md" {
+			continue
+		}
+		is.Equal(strings.Count(a.Content, "metadata:"), 1) // no duplicate key
+		is.True(strings.Contains(a.Content, "author: me"))
+		is.True(strings.Contains(a.Content, "version:"))
+		is.True(strings.Contains(a.Content, "generated: hatch@v0.9.9-test"))
+		is.True(strings.Contains(a.Content, "source: .hatch/_skills/review-pr/SKILL.md"))
+		return
+	}
+	t.Fatal("SKILL.md artifact not found")
+}
+
+func TestGenerate_SourceMetadataKeyWinsOnCollision(t *testing.T) {
+	// If the source's claude-metadata sets `source: overridden.md`,
+	// hatch must not replace it with the real .hatch/ path.
+	is := is.New(t)
+	claudeOverride := nestedMap("metadata", mapNode("source", "overridden.md"))
+	s := &source.Source{
+		HatchVersion: "v0.9.9-test",
+		Scopes: []source.Scope{{
+			Skills: []source.Primitive{{
+				Kind: source.KindSkill, Name: "review-pr", Description: "d", Body: "b", SourcePath: "x",
+				Overrides: map[string]*yaml.Node{"claude": claudeOverride},
+			}},
+		}},
+	}
+	arts, err := claude.New().Generate(s)
+	is.NoErr(err)
+	for _, a := range arts {
+		if a.Path != ".claude/skills/review-pr/SKILL.md" {
+			continue
+		}
+		is.True(strings.Contains(a.Content, "source: overridden.md"))
+		is.True(!strings.Contains(a.Content, "source: .hatch/_skills/review-pr/SKILL.md"))
+		is.True(strings.Contains(a.Content, "generated: hatch@v0.9.9-test")) // non-colliding still added
+		return
+	}
+	t.Fatal("SKILL.md artifact not found")
 }
 
 func TestGenerate_SkillBecomesFileUnderDotClaude(t *testing.T) {

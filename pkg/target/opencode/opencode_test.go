@@ -8,7 +8,50 @@ import (
 	"github.com/grafana/hatch/pkg/target"
 	"github.com/grafana/hatch/pkg/target/opencode"
 	"github.com/matryer/is"
+	"gopkg.in/yaml.v3"
 )
+
+func ocMetaOverride(key, value string) map[string]*yaml.Node {
+	return map[string]*yaml.Node{
+		"opencode": {
+			Kind: yaml.MappingNode,
+			Content: []*yaml.Node{
+				{Kind: yaml.ScalarNode, Value: "metadata"},
+				{
+					Kind: yaml.MappingNode,
+					Content: []*yaml.Node{
+						{Kind: yaml.ScalarNode, Value: key},
+						{Kind: yaml.ScalarNode, Value: value},
+					},
+				},
+			},
+		},
+	}
+}
+
+func TestGenerate_SkillMergesSourceMetadata(t *testing.T) {
+	is := is.New(t)
+	s := &source.Source{
+		HatchVersion: "v0.9.9-test",
+		Scopes: []source.Scope{{
+			Skills: []source.Primitive{{
+				Kind: source.KindSkill, Name: "review-pr", Description: "d", Body: "b",
+				SourcePath: "x", Overrides: ocMetaOverride("author", "me"),
+			}},
+		}},
+	}
+	arts, err := opencode.New().Generate(s)
+	is.NoErr(err)
+	for _, a := range arts {
+		if a.Path == ".opencode/skills/review-pr/SKILL.md" {
+			is.Equal(strings.Count(a.Content, "metadata:"), 1)
+			is.True(strings.Contains(a.Content, "author: me"))
+			is.True(strings.Contains(a.Content, "generated: hatch@v0.9.9-test"))
+			return
+		}
+	}
+	t.Fatal("skill SKILL.md not found")
+}
 
 func TestGenerate_AllFourPrimitives(t *testing.T) {
 	is := is.New(t)

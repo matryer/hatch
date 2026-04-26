@@ -225,7 +225,7 @@ func renderScopedRule(p source.Primitive, applyTo, displayName, targetName, hatc
 	if over, ok := p.Overrides[name]; ok {
 		fields = render.MergeOverride(fields, over)
 	}
-	fields = append(fields, target.MetadataField(hatchVersion, sourcePath))
+	fields = target.MergeField(fields, target.MetadataField(hatchVersion, sourcePath))
 	fm, err := render.Frontmatter(fields)
 	if err != nil {
 		return "", err
@@ -244,7 +244,7 @@ func renderSlashPrimitive(p source.Primitive, displayName, targetName, hatchVers
 	if over, ok := p.Overrides[name]; ok {
 		fields = render.MergeOverride(fields, over)
 	}
-	fields = append(fields, target.MetadataField(hatchVersion, sourcePath))
+	fields = target.MergeField(fields, target.MetadataField(hatchVersion, sourcePath))
 	fm, err := render.Frontmatter(fields)
 	if err != nil {
 		return "", err

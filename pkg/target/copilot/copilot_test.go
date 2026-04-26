@@ -8,7 +8,50 @@ import (
 	"github.com/grafana/hatch/pkg/target"
 	"github.com/grafana/hatch/pkg/target/copilot"
 	"github.com/matryer/is"
+	"gopkg.in/yaml.v3"
 )
+
+func copilotMetaOverride(key, value string) map[string]*yaml.Node {
+	return map[string]*yaml.Node{
+		"copilot": {
+			Kind: yaml.MappingNode,
+			Content: []*yaml.Node{
+				{Kind: yaml.ScalarNode, Value: "metadata"},
+				{
+					Kind: yaml.MappingNode,
+					Content: []*yaml.Node{
+						{Kind: yaml.ScalarNode, Value: key},
+						{Kind: yaml.ScalarNode, Value: value},
+					},
+				},
+			},
+		},
+	}
+}
+
+func TestGenerate_PromptFileMergesSourceMetadata(t *testing.T) {
+	is := is.New(t)
+	s := &source.Source{
+		HatchVersion: "v0.9.9-test",
+		Scopes: []source.Scope{{
+			Commands: []source.Primitive{{
+				Kind: source.KindCommand, Name: "commit", Description: "d", Body: "b",
+				SourcePath: "x", Overrides: copilotMetaOverride("author", "me"),
+			}},
+		}},
+	}
+	arts, err := copilot.New().Generate(s)
+	is.NoErr(err)
+	for _, a := range arts {
+		if a.Path == ".github/prompts/commit.prompt.md" {
+			is.Equal(strings.Count(a.Content, "metadata:"), 1)
+			is.True(strings.Contains(a.Content, "author: me"))
+			is.True(strings.Contains(a.Content, "generated: hatch@v0.9.9-test"))
+			return
+		}
+	}
+	t.Fatal("prompt file not found")
+}
 
 func TestGenerate_UnscopedRulesBlockInCopilotInstructions(t *testing.T) {
 	is := is.New(t)

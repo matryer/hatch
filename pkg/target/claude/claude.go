@@ -125,7 +125,7 @@ func renderSkill(p source.Primitive, displayName, targetName, hatchVersion, sour
 	if over, ok := p.Overrides[name]; ok {
 		fields = render.MergeOverride(fields, over)
 	}
-	fields = append(fields, target.MetadataField(hatchVersion, sourcePath))
+	fields = target.MergeField(fields, target.MetadataField(hatchVersion, sourcePath))
 	fm, err := render.Frontmatter(fields)
 	if err != nil {
 		return "", err

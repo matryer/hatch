@@ -182,7 +182,7 @@ func renderRuleMdc(p source.Primitive, globs []string, alwaysApply bool, display
 	if over, ok := p.Overrides[name]; ok {
 		fields = render.MergeOverride(fields, over)
 	}
-	fields = append(fields, target.MetadataField(hatchVersion, sourcePath))
+	fields = target.MergeField(fields, target.MetadataField(hatchVersion, sourcePath))
 	fm, err := render.Frontmatter(fields)
 	if err != nil {
 		return "", err
@@ -204,7 +204,7 @@ func renderInlineMdc(description, body, hatchVersion, sourcePath string) (string
 		fields = append(fields, render.Field{Key: "description", Value: description})
 	}
 	fields = append(fields, render.Field{Key: "alwaysApply", Value: true})
-	fields = append(fields, target.MetadataField(hatchVersion, sourcePath))
+	fields = target.MergeField(fields, target.MetadataField(hatchVersion, sourcePath))
 	fm, err := render.Frontmatter(fields)
 	if err != nil {
 		return "", err
