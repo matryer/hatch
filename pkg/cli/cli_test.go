@@ -111,3 +111,53 @@ func TestRun_UnknownCommand(t *testing.T) {
 	_, _, err := invoke(t, "nope")
 	is.True(err != nil)
 }
+
+func TestRun_HelpTopLevel_MentionsPerCommandHelp(t *testing.T) {
+	// The bare `hatch help` overview should tell users how to drill into
+	// a specific subcommand, otherwise the per-command help is undiscoverable.
+	is := is.New(t)
+	stdout, _, err := invoke(t, "help")
+	is.NoErr(err)
+	is.True(strings.Contains(stdout, "hatch help <command>"))
+}
+
+func TestRun_HelpForEachCommand_PrintsDetailedHelp(t *testing.T) {
+	// Per-command help must exist for every dispatchable subcommand. The
+	// output must contain the command name in its synopsis AND must NOT be
+	// the top-level overview (which lists every command and the registered
+	// targets) — otherwise we're silently falling through to the overview.
+	for _, cmd := range []string{"gen", "list", "clean", "init", "new", "version", "help"} {
+		t.Run(cmd, func(t *testing.T) {
+			is := is.New(t)
+			stdout, _, err := invoke(t, "help", cmd)
+			is.NoErr(err)
+			is.True(strings.Contains(stdout, "hatch "+cmd))    // synopsis must mention the command
+			is.True(!strings.Contains(stdout, "Registered targets")) // must not be the top-level overview
+		})
+	}
+}
+
+func TestRun_HelpForGen_IncludesFlagsAndExamples(t *testing.T) {
+	// `hatch help gen` should be useful: list flags and at least one
+	// example invocation. Pin the most important bits so we don't ship a
+	// per-command help block that's empty fluff.
+	is := is.New(t)
+	stdout, _, err := invoke(t, "help", "gen")
+	is.NoErr(err)
+	is.True(strings.Contains(stdout, "-targets"))
+	is.True(strings.Contains(stdout, "-no-hatch-skill"))
+	is.True(strings.Contains(stdout, "hatch gen -targets"))
+}
+
+func TestRun_HelpUnknownCommand(t *testing.T) {
+	is := is.New(t)
+	_, _, err := invoke(t, "help", "nope")
+	is.True(err != nil)
+	is.True(strings.Contains(err.Error(), "nope"))
+}
+
+func TestRun_HelpTooManyArgs(t *testing.T) {
+	is := is.New(t)
+	_, _, err := invoke(t, "help", "gen", "extra")
+	is.True(err != nil)
+}
