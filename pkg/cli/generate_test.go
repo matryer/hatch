@@ -242,6 +242,41 @@ func TestGen_OutputIncludesBlockLineRange(t *testing.T) {
 	is.True(sawBlock) // wrote CLAUDE.md line should use path:begin-end notation
 }
 
+func TestGen_ShipsExecutableBashScriptInSkill(t *testing.T) {
+	// A skill author can drop a bash script next to SKILL.md. After
+	// `hatch gen`, every target that supports skill assets (claude, codex,
+	// opencode) must have the script under its own skill dir, with content
+	// preserved and the executable bit intact.
+	is := is.New(t)
+	dir := t.TempDir()
+	is.NoErr(os.MkdirAll(filepath.Join(dir, ".hatch", "_skills", "run-checks", "scripts"), 0o755))
+	is.NoErr(os.WriteFile(filepath.Join(dir, ".hatch", "_skills", "run-checks", "SKILL.md"),
+		[]byte("---\ndescription: Run repo checks.\n---\nbody\n"), 0o644))
+
+	scriptSrc := filepath.Join(dir, ".hatch", "_skills", "run-checks", "scripts", "check.sh")
+	scriptBody := "#!/bin/sh\necho ok\n"
+	is.NoErr(os.WriteFile(scriptSrc, []byte(scriptBody), 0o644))
+	is.NoErr(os.Chmod(scriptSrc, 0o755))
+
+	t.Chdir(dir)
+	_, _, err := invoke(t, "gen")
+	is.NoErr(err)
+
+	for _, rel := range []string{
+		".claude/skills/run-checks/scripts/check.sh",
+		".agents/skills/run-checks/scripts/check.sh",
+		".opencode/skills/run-checks/scripts/check.sh",
+	} {
+		got, err := os.ReadFile(rel)
+		is.NoErr(err)                     // skill script should be copied to target dir
+		is.Equal(string(got), scriptBody) // script body must be preserved verbatim
+
+		info, err := os.Stat(rel)
+		is.NoErr(err)
+		is.True(info.Mode()&0o100 != 0) // owner exec bit must survive the copy
+	}
+}
+
 func TestGen_LegacyGenerateWordRemoved(t *testing.T) {
 	// `hatch generate` (the old long form) should now be an unknown command.
 	is := is.New(t)

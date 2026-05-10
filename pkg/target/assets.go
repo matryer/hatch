@@ -46,10 +46,15 @@ func CopySkillAssets(sk source.Primitive, destDir string) ([]Artifact, error) {
 		if err != nil {
 			return err
 		}
+		info, err := os.Stat(path)
+		if err != nil {
+			return err
+		}
 		out = append(out, Artifact{
-			Path:    filepath.Join(destDir, rel),
-			Mode:    ModeFile,
-			Content: string(data),
+			Path:       filepath.Join(destDir, rel),
+			Mode:       ModeFile,
+			Content:    string(data),
+			Executable: info.Mode()&0o100 != 0,
 		})
 		return nil
 	})

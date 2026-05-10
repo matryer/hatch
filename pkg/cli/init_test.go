@@ -52,11 +52,42 @@ func TestInit_ExamplesFlagScaffoldsAllPrimitives(t *testing.T) {
 	for _, rel := range []string{
 		".hatch/_rules/coding-style.md",
 		".hatch/_skills/review-pr/SKILL.md",
+		".hatch/_skills/review-pr/scripts/checkout-pr.sh",
 		".hatch/_commands/commit.md",
 		".hatch/_agents/security-auditor.md",
 	} {
 		_, err := os.Stat(rel)
 		is.NoErr(err) // scaffold file should exist
+	}
+
+	// The seeded bash script must be executable so the round-tripped copy
+	// in each target's skill dir inherits the exec bit.
+	info, err := os.Stat(".hatch/_skills/review-pr/scripts/checkout-pr.sh")
+	is.NoErr(err)
+	is.True(info.Mode()&0o100 != 0) // seeded script must be executable
+}
+
+func TestInit_ExamplesPlusGen_ShipsSkillScriptToTargets(t *testing.T) {
+	// End-to-end: hatch init -examples seeds a skill that ships a bash
+	// script; hatch gen must copy that script into each target's skill dir,
+	// executable.
+	is := is.New(t)
+	dir := t.TempDir()
+	t.Chdir(dir)
+
+	_, _, err := invoke(t, "init", "-examples")
+	is.NoErr(err)
+	_, _, err = invoke(t, "gen")
+	is.NoErr(err)
+
+	for _, rel := range []string{
+		".claude/skills/review-pr/scripts/checkout-pr.sh",
+		".agents/skills/review-pr/scripts/checkout-pr.sh",
+		".opencode/skills/review-pr/scripts/checkout-pr.sh",
+	} {
+		info, err := os.Stat(rel)
+		is.NoErr(err)                   // script must be copied to target skill dir
+		is.True(info.Mode()&0o100 != 0) // and stay executable
 	}
 }
 

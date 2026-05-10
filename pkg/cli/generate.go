@@ -206,7 +206,19 @@ func writeArtifact(a target.Artifact) error {
 		if err := os.MkdirAll(filepath.Dir(a.Path), 0o755); err != nil {
 			return err
 		}
-		return os.WriteFile(a.Path, []byte(a.Content), 0o644)
+		perm := os.FileMode(0o644)
+		if a.Executable {
+			perm = 0o755
+		}
+		if err := os.WriteFile(a.Path, []byte(a.Content), perm); err != nil {
+			return err
+		}
+		// WriteFile honours umask, which can mask the exec bit even when
+		// perm sets it. Re-chmod so the bit survives on tight-umask shells.
+		if a.Executable {
+			return os.Chmod(a.Path, perm)
+		}
+		return nil
 	case target.ModeBlock:
 		return block.Inject(a.Path, block.CurrentMarker, a.Content)
 	default:

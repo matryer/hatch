@@ -33,6 +33,11 @@ type Artifact struct {
 	// Content is the bytes to write. For ModeFile this is the whole file;
 	// for ModeBlock this is the block body (without marker lines).
 	Content string
+	// Executable, when true, makes hatch write the file with the owner
+	// execute bit set (0o755 instead of 0o644). Only meaningful for ModeFile;
+	// set by CopySkillAssets when a skill ships an executable sibling file
+	// (e.g. a bash script) so the destination skill can invoke it.
+	Executable bool
 }
 
 // Target is the per-agent code that turns a Source into artifacts.

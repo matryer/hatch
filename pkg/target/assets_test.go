@@ -77,3 +77,38 @@ func TestCopySkillAssets_NoSourcePathReturnsNil(t *testing.T) {
 	is.NoErr(err)
 	is.Equal(len(arts), 0)
 }
+
+func TestCopySkillAssets_PreservesExecutableBit(t *testing.T) {
+	// A skill that ships a bash script needs the script copied through with
+	// its executable bit intact, otherwise the skill can't actually run it.
+	// Non-executable assets must stay non-executable.
+	is := is.New(t)
+	dir := t.TempDir()
+	skillDir := filepath.Join(dir, "skills", "run-checks")
+	is.NoErr(os.MkdirAll(filepath.Join(skillDir, "scripts"), 0o755))
+	is.NoErr(os.WriteFile(filepath.Join(skillDir, "SKILL.md"), []byte("skill"), 0o644))
+
+	scriptPath := filepath.Join(skillDir, "scripts", "check.sh")
+	is.NoErr(os.WriteFile(scriptPath, []byte("#!/bin/sh\necho hi\n"), 0o644))
+	is.NoErr(os.Chmod(scriptPath, 0o755))
+
+	readmePath := filepath.Join(skillDir, "README.md")
+	is.NoErr(os.WriteFile(readmePath, []byte("hello"), 0o644))
+
+	sk := source.Primitive{Kind: source.KindSkill, Name: "run-checks", SourcePath: skillDir}
+	arts, err := target.CopySkillAssets(sk, "dest")
+	is.NoErr(err)
+
+	byPath := map[string]target.Artifact{}
+	for _, a := range arts {
+		byPath[a.Path] = a
+	}
+
+	script, ok := byPath[filepath.Join("dest", "scripts", "check.sh")]
+	is.True(ok)                // script asset should be emitted
+	is.True(script.Executable) // script with +x on source must carry exec bit
+
+	readme, ok := byPath[filepath.Join("dest", "README.md")]
+	is.True(ok)                 // readme asset should be emitted
+	is.True(!readme.Executable) // non-executable source must stay non-executable
+}

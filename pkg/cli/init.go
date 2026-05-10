@@ -48,6 +48,7 @@ func cmdInit(_ context.Context, args []string, stdout, stderr io.Writer) error {
 	type seed struct {
 		path string
 		body string
+		exec bool
 	}
 	seeds := []seed{
 		{
@@ -64,7 +65,22 @@ description: Review an open pull request for correctness, style, and tests.
 
 When asked to review a PR, check out the branch, read the diff end-to-end,
 and report findings as: (1) bugs, (2) style nits, (3) missing tests.
+
+Run ` + "`scripts/checkout-pr.sh <pr-number>`" + ` to fetch the branch before
+reviewing.
 `,
+		},
+		{
+			path: filepath.Join(srcRoot, source.SkillsDir, "review-pr", "scripts", "checkout-pr.sh"),
+			body: `#!/usr/bin/env bash
+set -euo pipefail
+if [[ $# -ne 1 ]]; then
+  echo "usage: checkout-pr.sh <pr-number>" >&2
+  exit 2
+fi
+gh pr checkout "$1"
+`,
+			exec: true,
 		},
 		{
 			path: filepath.Join(srcRoot, source.CommandsDir, "commit.md"),
@@ -100,8 +116,18 @@ Focus on OWASP Top 10 categories. Report findings as file:line references.
 		if err := os.MkdirAll(filepath.Dir(s.path), 0o755); err != nil {
 			return err
 		}
-		if err := os.WriteFile(s.path, []byte(s.body), 0o644); err != nil {
+		perm := os.FileMode(0o644)
+		if s.exec {
+			perm = 0o755
+		}
+		if err := os.WriteFile(s.path, []byte(s.body), perm); err != nil {
 			return err
+		}
+		if s.exec {
+			// WriteFile honours umask; re-chmod so the exec bit survives.
+			if err := os.Chmod(s.path, perm); err != nil {
+				return err
+			}
 		}
 		fmt.Fprintf(stdout, "created %s\n", s.path)
 	}
