@@ -72,6 +72,29 @@ hatch list
 hatch list -targets claude
 ```
 
+## hatch check
+
+CI gate. Re-derives what a fresh `hatch gen` would write and compares each
+result to the file already on disk, without touching the filesystem. Exits
+non-zero when any file is missing, stale, or has the wrong exec bit, and
+prints one line per drifted path so the failure is actionable.
+
+```
+$ hatch check
+out-of-date  CLAUDE.md  (stale)
+out-of-date  .claude/skills/review-pr/SKILL.md  (missing)
+hatch: 2 file(s) out of date; run `hatch gen` to update
+```
+
+On a clean tree it prints a one-line summary and exits 0:
+
+```
+$ hatch check
+all 7 generated file(s) up to date
+```
+
+Accepts the same `-targets` and `-no-hatch-skill` flags as `gen`.
+
 ## hatch clean
 
 Removes everything hatch generated. File-owned outputs are deleted;

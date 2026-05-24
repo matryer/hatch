@@ -6,6 +6,7 @@
 //
 //	hatch gen   [-targets names]          write all target outputs
 //	hatch list  [-targets names]          dry-run (print what would be written)
+//	hatch check [-targets names]          verify generated files are up to date (for CI)
 //	hatch clean [-targets names]          remove generated outputs
 //	hatch init  [-examples] [-path p]    scaffold .hatch/ (optionally examples / nested scope)
 //	hatch new <kind> [-path p] [title]   create a new source file

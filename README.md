@@ -62,6 +62,7 @@ its output paths, and trade-offs.
 | [`hatch new`](docs/cli.md#hatch-new) `<kind> [-path p] [title]`                 | create a new rule, skill, command, or agent from a template  |
 | [`hatch gen`](docs/cli.md#hatch-gen) `[-targets names]`                         | write every target's native files                            |
 | [`hatch list`](docs/cli.md#hatch-list) `[-targets names]`                       | dry-run; print what `gen` would write                        |
+| [`hatch check`](docs/cli.md#hatch-check) `[-targets names]`                     | verify generated files are up to date (for CI)               |
 | [`hatch clean`](docs/cli.md#hatch-clean) `[-targets names]`                     | remove everything hatch generated                            |
 | [`hatch version`, `hatch help`](docs/cli.md#hatch-version-and-help)             | print version / usage                                        |
 

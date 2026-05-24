@@ -33,6 +33,8 @@ func Run(ctx context.Context, version string, targets *target.Set, args []string
 		return cmdList(ctx, version, targets, rest, stdout, stderr)
 	case "clean":
 		return cmdClean(ctx, version, targets, rest, stdout, stderr)
+	case "check":
+		return cmdCheck(ctx, version, targets, rest, stdout, stderr)
 	case "init":
 		return cmdInit(ctx, rest, stdout, stderr)
 	case "new":
@@ -105,6 +107,25 @@ Flags:
 Examples:
   hatch list
   hatch list -targets claude
+`,
+	"check": `hatch check — verify generated files are up to date
+
+Re-derives what a fresh hatch gen would write from the current source tree,
+then compares each result to the file already on disk without touching the
+filesystem. Exits non-zero when any file is missing, stale, or has the
+wrong exec bit. Intended as a CI gate: assert that the checked-in
+generated files match the current .hatch/ source.
+
+Usage:
+  hatch check [flags]
+
+Flags:
+  -targets names     comma-separated target names (default: all)
+  -no-hatch-skill    skip the auto-injected hatch meta SKILL.md for this run
+
+Examples:
+  hatch check
+  hatch check -targets claude
 `,
 	"clean": `hatch clean — remove generated outputs
 
@@ -193,13 +214,14 @@ coding agents from a single source at .hatch/.
 Usage:
   hatch gen   [flags]                  write all target outputs
   hatch list  [flags]                  dry-run; print what would be written
+  hatch check [flags]                  verify generated files are up to date (for CI)
   hatch clean [flags]                  remove generated outputs
   hatch init  [-examples] [-path p]    scaffold .hatch/ (optionally with example files or under a nested scope)
   hatch new <kind> [-path p] [title]   create a new source file
   hatch version                        print version and exit
   hatch help                           this message
 
-Flags (gen/list/clean):
+Flags (gen/list/check/clean):
   -targets names     comma-separated target names (default: all)
   -no-hatch-skill    skip the auto-injected hatch meta SKILL.md for this run
 

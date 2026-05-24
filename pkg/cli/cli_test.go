@@ -126,7 +126,7 @@ func TestRun_HelpForEachCommand_PrintsDetailedHelp(t *testing.T) {
 	// output must contain the command name in its synopsis AND must NOT be
 	// the top-level overview (which lists every command and the registered
 	// targets) — otherwise we're silently falling through to the overview.
-	for _, cmd := range []string{"gen", "list", "clean", "init", "new", "version", "help"} {
+	for _, cmd := range []string{"gen", "list", "check", "clean", "init", "new", "version", "help"} {
 		t.Run(cmd, func(t *testing.T) {
 			is := is.New(t)
 			stdout, _, err := invoke(t, "help", cmd)

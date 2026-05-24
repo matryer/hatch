@@ -69,6 +69,26 @@ func Inject(path, marker, content string) error {
 	return os.WriteFile(path, []byte(out), 0o644)
 }
 
+// Plan returns the file bytes that Inject(path, marker, content) would
+// write, without touching the filesystem. Use this when you only need to
+// decide whether running Inject would change the file (e.g., for a CI
+// check). Missing-file errors propagate as os.ErrNotExist so callers can
+// distinguish "file absent" from "file unreadable".
+func Plan(path, marker, content string) ([]byte, error) {
+	if err := validateContent(content); err != nil {
+		return nil, err
+	}
+	existing, err := os.ReadFile(path)
+	if err != nil && !os.IsNotExist(err) {
+		return nil, err
+	}
+	block := Render(marker, content)
+	if len(existing) == 0 {
+		return []byte(block), nil
+	}
+	return []byte(replaceBlock(string(existing), marker, block)), nil
+}
+
 // validateContent refuses content where a line is, verbatim, a hatch
 // marker. Inline mentions inside paragraphs or code fences are fine — the
 // parser ignores them because it only matches whole lines.
