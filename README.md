@@ -33,7 +33,7 @@ wrote AGENTS.md:1-3
 
 Edit files under `.hatch/_rules/`, `.hatch/_skills/`, `.hatch/_commands/`,
 or `.hatch/_agents/`, then re-run `hatch gen`. Commit the `.hatch/` source
-*and* the generated files together.
+_and_ the generated files together.
 
 ## Migrating
 
@@ -45,26 +45,26 @@ To migrate to hatch, ask your coding agent to read our [docs](docs/).
 See [docs/features.md](docs/features.md) for how each emulation works,
 its output paths, and trade-offs.
 
-| Feature                   | Claude Code | Codex | Copilot | Cursor | OpenCode | Zed |
-| ------------------------- | :---------: | :---: | :-----: | :----: | :------: | :-: |
-| Rules (always-on)         |      ✓      |   ✓   |    ✓    |   ✓    |    ✓     |  ✓  |
-| Rules (scoped `applyTo`)  |      ⚠      |   ⚠   |    ✓    |   ✓    |    ⚠     |  ⚠  |
-| Skills                    |      ✓      |   ✓   |    ⚠    |   ⚠    |    ✓     |  ⚠  |
-| Slash commands            |      ✓      |   ⚠   |    ✓    |   ⚠    |    ✓     |  ⚠  |
-| Sub-agents                |      ✓      |   ⚠   |    ✓    |   ⚠    |    ✓     |  ⚠  |
-| Nested scopes (monorepo)  |      ✓      |   ✓   |    ⚠    |   ⚠    |    ✓     |  ⚠  |
+| Feature                  | Claude Code | Codex | Copilot | Cursor | OpenCode | Zed |
+| ------------------------ | :---------: | :---: | :-----: | :----: | :------: | :-: |
+| Rules (always-on)        |      ✓      |   ✓   |    ✓    |   ✓    |    ✓     |  ✓  |
+| Rules (scoped `applyTo`) |      ⚠      |   ⚠   |    ✓    |   ✓    |    ⚠     |  ⚠  |
+| Skills                   |      ✓      |   ✓   |    ⚠    |   ⚠    |    ✓     |  ✓  |
+| Slash commands           |      ✓      |   ⚠   |    ✓    |   ⚠    |    ✓     |  ⚠  |
+| Sub-agents               |      ✓      |   ⚠   |    ✓    |   ⚠    |    ✓     |  ⚠  |
+| Nested scopes (monorepo) |      ✓      |   ✓   |    ⚠    |   ⚠    |    ✓     |  ⚠  |
 
 ## CLI
 
-| Command                                                                         | What it does                                                 |
-| ------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| [`hatch init`](docs/cli.md#hatch-init) `[-examples] [-path p]`                  | scaffold `.hatch/` (optionally with example files or nested) |
-| [`hatch new`](docs/cli.md#hatch-new) `<kind> [-path p] [title]`                 | create a new rule, skill, command, or agent from a template  |
-| [`hatch gen`](docs/cli.md#hatch-gen) `[-targets names]`                         | write every target's native files                            |
-| [`hatch list`](docs/cli.md#hatch-list) `[-targets names]`                       | dry-run; print what `gen` would write                        |
-| [`hatch check`](docs/cli.md#hatch-check) `[-targets names]`                     | verify generated files are up to date (for CI)               |
-| [`hatch clean`](docs/cli.md#hatch-clean) `[-targets names]`                     | remove everything hatch generated                            |
-| [`hatch version`, `hatch help`](docs/cli.md#hatch-version-and-help)             | print version / usage                                        |
+| Command                                                             | What it does                                                 |
+| ------------------------------------------------------------------- | ------------------------------------------------------------ |
+| [`hatch init`](docs/cli.md#hatch-init) `[-examples] [-path p]`      | scaffold `.hatch/` (optionally with example files or nested) |
+| [`hatch new`](docs/cli.md#hatch-new) `<kind> [-path p] [title]`     | create a new rule, skill, command, or agent from a template  |
+| [`hatch gen`](docs/cli.md#hatch-gen) `[-targets names]`             | write every target's native files                            |
+| [`hatch list`](docs/cli.md#hatch-list) `[-targets names]`           | dry-run; print what `gen` would write                        |
+| [`hatch check`](docs/cli.md#hatch-check) `[-targets names]`         | verify generated files are up to date (for CI)               |
+| [`hatch clean`](docs/cli.md#hatch-clean) `[-targets names]`         | remove everything hatch generated                            |
+| [`hatch version`, `hatch help`](docs/cli.md#hatch-version-and-help) | print version / usage                                        |
 
 See [docs/cli.md](docs/cli.md) for the full flag reference, including
 `-no-hatch-skill` and the auto-injected meta skill.

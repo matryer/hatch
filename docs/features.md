@@ -13,7 +13,7 @@ The superscript points to the matching section below.
 | ------------------------- | :---------: | :---: | :-----: | :----: | :------: | :-----: |
 | Rules (always-on)         |      ✓      |   ✓   |    ✓    |   ✓    |    ✓     |   ✓     |
 | Rules (scoped `applyTo`)  |     ⚠¹      |  ⚠¹   |    ✓    |   ✓    |    ⚠¹    |   ⚠¹    |
-| Skills                    |      ✓      |   ✓   |    ⚠²   |   ⚠³   |    ✓     |   ⚠²    |
+| Skills                    |      ✓      |   ✓   |    ⚠²   |   ⚠³   |    ✓     |   ✓     |
 | Slash commands            |      ✓      |  ⚠⁴   |    ✓    |   ⚠³   |    ✓     |   ⚠⁴    |
 | Sub-agents                |      ✓      |  ⚠⁴   |    ✓    |   ⚠³   |    ✓     |   ⚠⁴    |
 | Nested scopes (monorepo)  |      ✓      |   ✓   |    ⚠⁵   |   ⚠⁶   |    ✓     |   ⚠⁷    |
@@ -29,7 +29,8 @@ the rule as a sub-section of the hatch-managed block, with the
 scope while reading:
 
 ```markdown
-## testing.md (applies to: **/*_test.go)
+## testing.md (applies to: \*_/_\_test.go)
+
 …rule body…
 ```
 
@@ -39,9 +40,9 @@ true path-based scoping with no inlining.
 
 ## 2. Skills inlined into the rules file
 
-Applies to: Copilot (`.github/copilot-instructions.md`), Zed (`.rules`).
+Applies to: Copilot (`.github/copilot-instructions.md`).
 
-Neither Copilot nor Zed has a native skill primitive. Hatch merges
+Copilot has no native skill primitive. Hatch merges
 each skill's body into the hatch-managed block inside the target's
 rules file under a `## Skills` section.
 
@@ -61,9 +62,9 @@ Skills, commands, and sub-agents are emitted as additional rule files
 with a kind prefix in the filename, so you can see at a glance which
 rule files came from which hatch primitive:
 
-- skill   → `.cursor/rules/skill-<n>.mdc`
+- skill → `.cursor/rules/skill-<n>.mdc`
 - command → `.cursor/rules/command-<n>.mdc`
-- agent   → `.cursor/rules/agent-<n>.mdc`
+- agent → `.cursor/rules/agent-<n>.mdc`
 
 The content fires as always-on rule context. Consequences:
 
@@ -108,7 +109,7 @@ same strategy as Copilot, through Cursor's native `globs` field: a
 kind-prefixed filenames for non-rule primitives
 (`<scope>-skill-<n>.mdc`, etc.).
 
-## 7. Zed: everything inlined into a single rules file
+## 7. Zed: rules, commands, and sub-agents inlined into a single rules file
 
 Applies to: Zed.
 
@@ -118,16 +119,14 @@ Zed reads project guidance from a single rules file at the repo root
 `.rules`, Zed's highest-priority filename, to avoid colliding with
 Codex / OpenCode (both own `AGENTS.md`).
 
-Zed has no project-level concept of skills, slash commands, or
-sub-agents (native skill support is in flight — issue
-[zed-industries/zed#49057](https://github.com/zed-industries/zed/issues/49057)).
-Hatch inlines all four primitives — rules, skills, commands, and
-sub-agents — into `.rules` using the same patterns as sections 1, 2,
-and 4 above. Sibling skill assets are not copied because `.rules` is
-the only file Zed reads.
+Zed has native support for project-level skills: skills are written as
+individual `.agents/skills/<name>/SKILL.md` file artifacts, with sibling
+assets copied verbatim. Rules, commands, and sub-agents — which have no
+native Zed primitive — are inlined into `.rules` as markdown sections.
 
 Zed only reads the project root, so nested scopes flatten into the
 same root `.rules` file. Each non-root scope's content gets a
 `# Scope: <path>/` heading so the agent sees what each section relates
 to. Without a glob field there is no path-based enforcement; the agent
-loads everything every turn.
+loads everything every turn. (Skills, however, are emitted at their scoped
+path like `<path>/.agents/skills/<name>/SKILL.md`).

@@ -72,7 +72,7 @@ func TestGenerate_AgentInlinedUnderSubAgentsHeading(t *testing.T) {
 	is.True(strings.Contains(blk.Content, "do research"))
 }
 
-func TestGenerate_SkillInlinedUnderSkillsHeading(t *testing.T) {
+func TestGenerate_SkillWrittenAsNativeFile(t *testing.T) {
 	is := is.New(t)
 	s := &source.Source{Scopes: []source.Scope{{
 		Skills: []source.Primitive{
@@ -81,16 +81,69 @@ func TestGenerate_SkillInlinedUnderSkillsHeading(t *testing.T) {
 	}}}
 	arts, err := zed.New().Generate(s)
 	is.NoErr(err)
-	blk := findArtifact(arts, ".rules")
-	is.True(blk != nil)
-	is.True(strings.Contains(blk.Content, "## Skills"))
-	is.True(strings.Contains(blk.Content, "review-pr"))
-	is.True(strings.Contains(blk.Content, "skill body"))
 
-	// No separate skill files written — .rules is the only artifact.
-	for _, a := range arts {
-		is.True(!strings.Contains(a.Path, "skills/"))
+	// Skill written as a native file artifact.
+	sk := findArtifact(arts, ".agents/skills/review-pr/SKILL.md")
+	is.True(sk != nil)
+	is.Equal(sk.Mode, target.ModeFile)
+	is.True(strings.Contains(sk.Content, "name: review-pr"))
+	is.True(strings.Contains(sk.Content, "description: review a PR"))
+	is.True(strings.Contains(sk.Content, "skill body"))
+
+	// Skills must NOT be inlined into .rules.
+	blk := findArtifact(arts, ".rules")
+	is.True(blk == nil || !strings.Contains(blk.Content, "## Skills"))
+	is.True(blk == nil || !strings.Contains(blk.Content, "skill body"))
+}
+
+func TestGenerate_SkillOnlyProducesNoRulesArtifact(t *testing.T) {
+	is := is.New(t)
+	s := &source.Source{Scopes: []source.Scope{{
+		Skills: []source.Primitive{
+			{Kind: source.KindSkill, Name: "my-skill", Description: "does things", Body: "instructions"},
+		},
+	}}}
+	arts, err := zed.New().Generate(s)
+	is.NoErr(err)
+
+	// No .rules artifact when the only content is skills.
+	is.True(findArtifact(arts, ".rules") == nil)
+}
+
+func TestGenerate_SkillFrontmatterFields(t *testing.T) {
+	is := is.New(t)
+	s := &source.Source{
+		HatchVersion: "1.2.3",
+		Scopes: []source.Scope{{
+			Skills: []source.Primitive{
+				{Kind: source.KindSkill, Name: "lint", Description: "run linters", Body: "lint instructions"},
+			},
+		}},
 	}
+	arts, err := zed.New().Generate(s)
+	is.NoErr(err)
+
+	sk := findArtifact(arts, ".agents/skills/lint/SKILL.md")
+	is.True(sk != nil)
+	is.True(strings.Contains(sk.Content, "name: lint"))
+	is.True(strings.Contains(sk.Content, "description: run linters"))
+	is.True(strings.Contains(sk.Content, "hatch@1.2.3"))
+}
+
+func TestGenerate_SkillNestedScopeWritesToScopedPath(t *testing.T) {
+	is := is.New(t)
+	s := &source.Source{Scopes: []source.Scope{
+		{Path: ""},
+		{Path: "backend", Skills: []source.Primitive{
+			{Kind: source.KindSkill, Name: "migrate", Description: "run migrations", Body: "migration steps"},
+		}},
+	}}
+	arts, err := zed.New().Generate(s)
+	is.NoErr(err)
+
+	sk := findArtifact(arts, "backend/.agents/skills/migrate/SKILL.md")
+	is.True(sk != nil)
+	is.True(strings.Contains(sk.Content, "name: migrate"))
 }
 
 func TestGenerate_NestedScopeFlattenedIntoRootRules(t *testing.T) {
@@ -157,6 +210,21 @@ func TestGenerate_TargetFilteringExcludesUnselectedPrimitives(t *testing.T) {
 	is.True(blk != nil)
 	is.True(strings.Contains(blk.Content, "EVERYWHERE"))
 	is.True(!strings.Contains(blk.Content, "CLAUDE ONLY"))
+}
+
+func TestGenerate_SkillTargetFilteringExcludesUnselectedSkills(t *testing.T) {
+	is := is.New(t)
+	s := &source.Source{Scopes: []source.Scope{{
+		Skills: []source.Primitive{
+			{Kind: source.KindSkill, Name: "claude-only", Description: "claude skill", Body: "body", Targets: []string{"claude"}},
+			{Kind: source.KindSkill, Name: "all-targets", Description: "universal skill", Body: "universal body"},
+		},
+	}}}
+	arts, err := zed.New().Generate(s)
+	is.NoErr(err)
+
+	is.True(findArtifact(arts, ".agents/skills/all-targets/SKILL.md") != nil)
+	is.True(findArtifact(arts, ".agents/skills/claude-only/SKILL.md") == nil)
 }
 
 func TestGenerate_EmptySourceProducesNoArtifacts(t *testing.T) {
