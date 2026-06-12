@@ -33,7 +33,7 @@ func cmdCheck(ctx context.Context, version string, available *target.Set, args [
 	if err != nil {
 		return err
 	}
-	src, err := loadSource(!*cf.noHatchSkill, version)
+	src, err := loadSource(!*cf.noHatchSkill, version, *cf.banner)
 	if err != nil {
 		return err
 	}
