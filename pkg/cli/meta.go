@@ -12,12 +12,13 @@ import "github.com/grafana/hatch/pkg/source"
 //
 // hatchVersion is stamped into the returned Source so targets can
 // embed it as metadata.generated in every generated file's frontmatter.
-func loadSource(includeMeta bool, hatchVersion string) (*source.Source, error) {
+func loadSource(includeMeta bool, hatchVersion string, banner bool) (*source.Source, error) {
 	s, err := source.Load(".")
 	if err != nil {
 		return nil, err
 	}
 	s.HatchVersion = hatchVersion
+	s.Banner = banner
 	if includeMeta {
 		injectMetaSkill(s)
 	}

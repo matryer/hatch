@@ -33,7 +33,7 @@ func (Target) DisplayName() string { return displayName }
 func (t Target) Generate(s *source.Source) ([]target.Artifact, error) {
 	var out []target.Artifact
 	for i := range s.Scopes {
-		arts, err := t.generateScope(&s.Scopes[i], s.HatchVersion)
+		arts, err := t.generateScope(&s.Scopes[i], s.HatchVersion, s.Banner)
 		if err != nil {
 			return nil, err
 		}
@@ -42,7 +42,7 @@ func (t Target) Generate(s *source.Source) ([]target.Artifact, error) {
 	return out, nil
 }
 
-func (t Target) generateScope(sc *source.Scope, hatchVersion string) ([]target.Artifact, error) {
+func (t Target) generateScope(sc *source.Scope, hatchVersion string, banner bool) ([]target.Artifact, error) {
 	var out []target.Artifact
 
 	// Codex has no first-class slash-command or sub-agent primitive, so
@@ -67,7 +67,7 @@ func (t Target) generateScope(sc *source.Scope, hatchVersion string) ([]target.A
 		if !sk.HasTarget(name) {
 			continue
 		}
-		content, err := renderSkill(sk, displayName, name, hatchVersion, target.SourceFilePathFor(sc.Path, sk))
+		content, err := renderSkill(sk, displayName, name, hatchVersion, target.SourceFilePathFor(sc.Path, sk), banner)
 		if err != nil {
 			return nil, err
 		}
@@ -100,7 +100,7 @@ func nonEmpty(sections ...string) []string {
 	return out
 }
 
-func renderSkill(p source.Primitive, displayName, targetName, hatchVersion, sourcePath string) (string, error) {
+func renderSkill(p source.Primitive, displayName, targetName, hatchVersion, sourcePath string, banner bool) (string, error) {
 	fields := []render.Field{
 		{Key: "name", Value: p.Name},
 		{Key: "description", Value: p.Description},
@@ -114,6 +114,9 @@ func renderSkill(p source.Primitive, displayName, targetName, hatchVersion, sour
 		return "", err
 	}
 	body := strings.TrimRight(render.Body(p.Body, displayName, targetName), "\n")
+	if banner {
+		body = render.PrependBanner(body, render.Banner(sourcePath))
+	}
 	if body == "" {
 		return fm, nil
 	}
