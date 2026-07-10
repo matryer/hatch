@@ -1,0 +1,8 @@
+---
+alwaysApply: true
+metadata:
+  generated: hatch@dev
+  source: .hatch/_rules/coding-style.md
+---
+
+Write clean, well-tested Go. Prefer short functions. Use table-driven tests.

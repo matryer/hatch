@@ -1,0 +1,11 @@
+---
+description: Review an open pull request for correctness, style, and tests.
+---
+
+# review-pr
+
+When asked to review a PR, check out the branch, read the diff end-to-end,
+and report findings as: (1) bugs, (2) style nits, (3) missing tests.
+
+Run `scripts/checkout-pr.sh <pr-number>` to fetch the branch before
+reviewing.

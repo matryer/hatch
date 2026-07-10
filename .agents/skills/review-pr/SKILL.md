@@ -1,0 +1,15 @@
+---
+name: review-pr
+description: Review an open pull request for correctness, style, and tests.
+metadata:
+  generated: hatch@dev
+  source: .hatch/_skills/review-pr/SKILL.md
+---
+
+# review-pr
+
+When asked to review a PR, check out the branch, read the diff end-to-end,
+and report findings as: (1) bugs, (2) style nits, (3) missing tests.
+
+Run `scripts/checkout-pr.sh <pr-number>` to fetch the branch before
+reviewing.
