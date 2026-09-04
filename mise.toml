@@ -1,5 +1,5 @@
 [tools]
-go = "1.26.3"
+go = "1.27.1"
 
 [tasks.format]
 description = "Format all Go files with go fmt"
